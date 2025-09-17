@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MIND_CHECK_AI</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #chat { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; }
+        .user { color: blue; }
+        .bot { color: green; }
+        .source { font-size: 12px; color: gray; margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <h2>MIND_CHECK_AI 🤖 </h2>
+    <div id="chat"></div>
+    <input type="text" id="query" placeholder="Ask something..." style="width:80%">
+    <button onclick="sendQuery()">Send</button>
+
+    <script>
+        async function sendQuery() {
+            let query = document.getElementById("query").value;
+            if (!query) return;
+
+            let chat = document.getElementById("chat");
+            chat.innerHTML += "<p class='user'><b>You:</b> " + query + "</p>";
+
+            const response = await fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query })
+            });
+            const data = await response.json();
+
+            chat.innerHTML += "<p class='bot'><b>Bot:</b> " + data.answer + "</p>";
+
+            data.sources.forEach((src, idx) => {
+                chat.innerHTML += `<p class='source'>Source ${idx+1}: ${src.file} (page ${src.page})<br>${src.text}...</p>`;
+            });
+
+            chat.scrollTop = chat.scrollHeight;
+            document.getElementById("query").value = "";
+        }
+    </script>
+</body>
+</html>
