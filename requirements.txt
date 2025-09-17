@@ -7,3 +7,5 @@ python-dotenv
 transformers
 torch
 sentence-transformers
+gunicorn
+flask
